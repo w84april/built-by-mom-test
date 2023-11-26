@@ -7,7 +7,7 @@ export const SendTokenForm = () => {
     amount: 0,
   };
   return (
-    <div className="flex h-full flex-col grow items-center justify-center p-24 bg-gradient-radial from-gradient-start to-gradient-end)">
+    <div className="flex h-full flex-col grow items-center justify-center p-24">
       <div className="bg-white p-12 rounded-3xl shadow-md max-w-lg w-full">
         <Formik
           initialValues={initialValues}
