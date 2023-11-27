@@ -1,71 +1,69 @@
 'use client';
 import { Form, Formik } from 'formik';
+import { FormSelectToken } from './form-parts/form-select-token';
+import { useGetSupportedTokens } from '@/hooks/use-get-supported-tokens';
+import { FormInput } from './form-parts/form-input';
+import { useAccount } from 'wagmi';
+import { useGetMultipleBalances } from '@/hooks/use-get-multiple-balances';
+import { useIsMounted } from '@/hooks/use-is-mounted';
 
 export const SendTokenForm = () => {
+  const { address } = useAccount();
+
+  const supportedTokens = useGetSupportedTokens();
+  const selectOptions = supportedTokens.map((token) => ({
+    value: token.address,
+    title: token.symbol,
+  }));
+
   const initialValues = {
     address: '',
     amount: 0,
+    token: supportedTokens.at(0)?.address,
   };
+
+  const { balances, isLoading, error } = useGetMultipleBalances({
+    address,
+    tokens: supportedTokens,
+  });
+
+  const isMounted = useIsMounted(); // A hack to prevent hydration errors occuring in FormSelectToken
+
   return (
     <div className="flex h-full flex-col grow items-center justify-center p-24">
       <div className="bg-white p-12 rounded-3xl shadow-md max-w-lg w-full">
         <Formik
           initialValues={initialValues}
+          enableReinitialize
           onSubmit={(values) => {
             console.log(values);
           }}
         >
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
             <Form className="space-y-6" id={'send-token-form'}>
-              <div>
-                <label className="block text-sm font-medium leading-6 text-gray-900">Token</label>
-                <select
-                  id="countries"
-                  className="flex text-gray-900 items-center w-full justify-between border-solid border-r-8 border-transparent rounded-md text-md pl-2 py-1.5 outline-2 outline-pink-500 focus:outline ring-1 ring-gray-300"
-                >
-                  <option value="DAI">DAI</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium leading-6 text-gray-900">
-                  Recipient Address/ENS Name
-                </label>
-                <div className="mt-2">
-                  <input
-                    name="address"
-                    required
-                    value={values.address}
-                    onChange={handleChange}
-                    className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset  ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-pink-600 !outline-none sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
+              <FormSelectToken
+                name={'token'}
+                label={'Token'}
+                options={isMounted() ? selectOptions : []}
+                balances={balances}
+                handleChange={handleChange}
+              />
 
-              <div>
-                <div className="flex items-center justify-between">
-                  <label className="block text-sm font-medium leading-6 text-gray-900">
-                    Amount
-                  </label>
-                  <div className="flex gap-1">
-                    <button className="rounded-md bg-pink-400 px-1.5 py-1 text-sm text-white shadow-sm hover:bg-pink-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  focus-visible:outline-pink-400">
-                      25%
-                    </button>
-                    <button className="rounded-md bg-pink-400 px-1.5 py-1 text-sm text-white shadow-sm hover:bg-pink-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  focus-visible:outline-pink-400">
-                      50%
-                    </button>
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <input
-                    name="amount"
-                    required
-                    value={values.amount}
-                    onChange={handleChange}
-                    type="number"
-                    className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-pink-600 !outline-none sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
+              <FormInput
+                name={'address'}
+                value={values.address}
+                label={'Recipient Address/ENS Name'}
+                handleChange={handleChange}
+              />
+
+              <FormInput
+                label="Amount"
+                name={'amount'}
+                value={values.amount}
+                type="number"
+                shouldDisplayPercentButtons
+                handleChange={handleChange}
+              />
 
               <div>
                 <button
