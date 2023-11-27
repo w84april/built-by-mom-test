@@ -3,7 +3,7 @@ import { ChainTokens } from '@/utils/constants';
 import { formatUnitsToNumber } from '@/utils/format/format-units-to-number';
 import { erc20ABI, useContractReads } from 'wagmi';
 
-export type Balances = Record<EvmAddress, bigint>;
+export type Balances = Record<EvmAddress, number>;
 
 // Wagmi provides us with useBalance hook which is siutable for fetching single token balance.
 // This hook will help us to fetch multiple token balances efficiently.

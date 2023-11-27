@@ -2,10 +2,15 @@
 import { Form, Formik } from 'formik';
 import { FormSelectToken } from './form-parts/form-select-token';
 import { useGetSupportedTokens } from '@/hooks/use-get-supported-tokens';
-import { FormInput } from './form-parts/form-input';
 import { useAccount } from 'wagmi';
 import { useGetMultipleBalances } from '@/hooks/use-get-multiple-balances';
 import { useIsMounted } from '@/hooks/use-is-mounted';
+import { FormInputAddress } from './form-parts/form-input-address';
+import { FormInputNumber } from './form-parts/form-input-number';
+import { Button } from './common/button';
+import { EvmAddress } from '@/types/common';
+
+export type FormFields = { address: string; amount: number; token: EvmAddress | undefined };
 
 export const SendTokenForm = () => {
   const { address } = useAccount();
@@ -16,13 +21,13 @@ export const SendTokenForm = () => {
     title: token.symbol,
   }));
 
-  const initialValues = {
+  const initialValues: FormFields = {
     address: '',
     amount: 0,
     token: supportedTokens.at(0)?.address,
   };
 
-  const { balances, isLoading, error } = useGetMultipleBalances({
+  const { balances } = useGetMultipleBalances({
     address,
     tokens: supportedTokens,
   });
@@ -48,31 +53,23 @@ export const SendTokenForm = () => {
                 balances={balances}
                 handleChange={handleChange}
               />
-
-              <FormInput
+              <FormInputAddress
                 name={'address'}
                 value={values.address}
                 label={'Recipient Address/ENS Name'}
                 handleChange={handleChange}
               />
-
-              <FormInput
+              <FormInputNumber
                 label="Amount"
                 name={'amount'}
                 value={values.amount}
-                type="number"
                 shouldDisplayPercentButtons
                 handleChange={handleChange}
+                balances={balances}
               />
-
-              <div>
-                <button
-                  type="submit"
-                  className="flex w-full justify-center rounded-md bg-pink-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-pink-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  focus-visible:outline-pink-600"
-                >
-                  Send
-                </button>
-              </div>
+              <Button type="submit" className="w-full">
+                Send
+              </Button>
             </Form>
           )}
         </Formik>
