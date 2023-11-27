@@ -1,5 +1,5 @@
 'use client';
-import { Form, Formik } from 'formik';
+import { ErrorMessage, Form, Formik } from 'formik';
 import { FormSelectToken } from './form-parts/form-select-token';
 import { useGetSupportedTokens } from '@/hooks/use-get-supported-tokens';
 import { useAccount } from 'wagmi';
@@ -9,6 +9,8 @@ import { FormInputAddress } from './form-parts/form-input-address';
 import { FormInputNumber } from './form-parts/form-input-number';
 import { Button } from './common/button';
 import { EvmAddress } from '@/types/common';
+import { getFormValidationSchema } from '@/utils/form/get-form-validation-schema';
+import { CustomErrorMessageWrapper } from './common/custom-error-mesage-wrapper';
 
 export type FormFields = { address: string; amount: number; token: EvmAddress | undefined };
 
@@ -16,16 +18,20 @@ export const SendTokenForm = () => {
   const { address } = useAccount();
 
   const supportedTokens = useGetSupportedTokens();
-  const selectOptions = supportedTokens.map((token) => ({
-    value: token.address,
-    title: token.symbol,
-  }));
+  const selectOptions = supportedTokens
+    ? supportedTokens.map((token) => ({
+        value: token.address,
+        title: token.symbol,
+      }))
+    : [];
 
   const initialValues: FormFields = {
     address: '',
     amount: 0,
     token: supportedTokens.at(0)?.address,
   };
+
+  const validationSchema = getFormValidationSchema();
 
   const { balances } = useGetMultipleBalances({
     address,
@@ -40,33 +46,54 @@ export const SendTokenForm = () => {
         <Formik
           initialValues={initialValues}
           enableReinitialize
+          validationSchema={validationSchema}
+          validateOnChange={true}
+          validateOnBlur={true}
+          validateOnMount={true}
           onSubmit={(values) => {
             console.log(values);
           }}
         >
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
             <Form className="space-y-6" id={'send-token-form'}>
-              <FormSelectToken
-                name={'token'}
-                label={'Token'}
-                options={isMounted() ? selectOptions : []}
-                balances={balances}
-                handleChange={handleChange}
-              />
-              <FormInputAddress
-                name={'address'}
-                value={values.address}
-                label={'Recipient Address/ENS Name'}
-                handleChange={handleChange}
-              />
-              <FormInputNumber
-                label="Amount"
-                name={'amount'}
-                value={values.amount}
-                shouldDisplayPercentButtons
-                handleChange={handleChange}
-                balances={balances}
-              />
+              <div>
+                <FormSelectToken
+                  name={'token'}
+                  label={'Token'}
+                  options={isMounted() ? selectOptions : []}
+                  balances={balances}
+                  handleChange={handleChange}
+                />
+                <div className="h-4">
+                  <ErrorMessage name="token">{CustomErrorMessageWrapper}</ErrorMessage>
+                </div>
+              </div>
+
+              <div>
+                <FormInputAddress
+                  name={'address'}
+                  value={values.address}
+                  label={'Recipient Address/ENS Name'}
+                  handleChange={handleChange}
+                />
+                <div className="h-4">
+                  <ErrorMessage name="address">{CustomErrorMessageWrapper}</ErrorMessage>
+                </div>
+              </div>
+
+              <div>
+                <FormInputNumber
+                  label="Amount"
+                  name={'amount'}
+                  value={values.amount}
+                  shouldDisplayPercentButtons
+                  handleChange={handleChange}
+                  balances={balances}
+                />
+                <div className="h-4">
+                  <ErrorMessage name="amount">{CustomErrorMessageWrapper}</ErrorMessage>
+                </div>
+              </div>
               <Button type="submit" className="w-full">
                 Send
               </Button>

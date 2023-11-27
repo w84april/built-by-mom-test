@@ -6,5 +6,5 @@ export const useGetSupportedTokens = (): ChainTokens => {
 
   if (!chain) return [];
 
-  return supportedEVMNetworkTokensList[chain.id as EVM_NETWORKS];
+  return supportedEVMNetworkTokensList[chain.id as EVM_NETWORKS] || [];
 };

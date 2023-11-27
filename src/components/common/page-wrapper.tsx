@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { TopNav } from './top-nav';
+import { TopNav } from '../top-nav';
 
 export const PageWrapper = ({ children }: { children: ReactNode }) => {
   return (

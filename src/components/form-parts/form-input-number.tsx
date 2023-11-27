@@ -44,7 +44,7 @@ export const FormInputNumber = ({
             {percentIntervals.map((percent) => (
               <Button
                 key={percent}
-                className="leading-3 text-sm"
+                className="leading-3 text-xs px-1.5 py-0.5"
                 onClick={() => onPercentButtonClick(percent)}
               >
                 {percent === 100 ? 'max' : `${percent}%`}

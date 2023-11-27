@@ -1,5 +1,5 @@
 'use client';
-import { AccountImage } from '@/components/account-image';
+import { AccountImage } from '@/components/common/account-image';
 import { MyApp } from '@/components/my-app';
 import { chains, wagmiConfig } from '@/utils/wagmi/wagmi-client';
 import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
