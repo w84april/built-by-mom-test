@@ -40,7 +40,7 @@ export const FormInputNumber = ({
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex sm:items-center justify-between flex-col sm:flex-row">
         {label && (
           <label className="block text-sm font-medium leading-6 text-gray-900">{label}</label>
         )}
