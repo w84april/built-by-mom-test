@@ -46,10 +46,10 @@ export const SendTokenForm = () => {
 
   const onSubmit = (data: FieldValues) => console.log(data);
 
-  // Reset form when network changes
+  // Reset form when network or account changes
   useEffect(() => {
     reset(defaultValues);
-  }, [chain?.id]);
+  }, [chain?.id, address]);
 
   return (
     <div className="flex h-full flex-col grow items-center justify-center p-2 sm:p-24">
