@@ -9,7 +9,7 @@ import { FormInputNumber } from './form-parts/form-input-number';
 import { FormSendButton } from './form-parts/form-send-button';
 import { FieldValues, FormProvider, useForm } from 'react-hook-form';
 import { ErrorMessage } from './common/error-message';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 export const SendTokenForm = () => {
   const { address } = useAccount();
@@ -23,11 +23,14 @@ export const SendTokenForm = () => {
       }))
     : [];
 
-  const defaultValues = {
-    recipient: '',
-    amount: 0,
-    token: supportedTokens.at(0)?.address,
-  };
+  const defaultValues = useMemo(
+    () => ({
+      recipient: '',
+      amount: 0,
+      token: supportedTokens.at(0)?.address,
+    }),
+    [supportedTokens],
+  );
 
   const methods = useForm({ defaultValues, mode: 'onChange' });
 
@@ -48,8 +51,9 @@ export const SendTokenForm = () => {
 
   // Reset form when network or account changes
   useEffect(() => {
+    console.log('here');
     reset(defaultValues);
-  }, [chain?.id, address]);
+  }, [chain?.id, address, reset, defaultValues]);
 
   return (
     <div className="flex h-full flex-col grow items-center justify-center p-2 sm:p-24">
