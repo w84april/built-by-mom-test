@@ -1,36 +1,41 @@
-import { ChangeEventHandler } from 'react';
+import { InputHTMLAttributes } from 'react';
 import { Input } from '../common/input';
 import { Button } from '../common/button';
-import { useFormikContext } from 'formik';
 import { percentOf } from '@/utils/common/percent-of';
 import { Balances } from '@/hooks/use-get-multiple-balances';
-import { FormFields } from '../send-token-form';
+import { useFormContext } from 'react-hook-form';
+import { getTokenInfo } from '@/utils/common/get-token-info';
+import { formatUnitsToNumber } from '@/utils/format/format-units-to-number';
+import { useNetwork } from 'wagmi';
 
 const percentIntervals = [25, 50, 75, 100];
 
 type Props = {
-  value: number;
-  name: string;
   balances: Balances;
-  handleChange: ChangeEventHandler<HTMLInputElement> | undefined;
+  name: string;
   label?: string;
   shouldDisplayPercentButtons?: boolean;
-};
+} & InputHTMLAttributes<HTMLInputElement>;
 
 export const FormInputNumber = ({
   value,
   name,
-  handleChange,
   label,
   balances,
   shouldDisplayPercentButtons = false,
 }: Props) => {
-  const { values, setFieldValue } = useFormikContext<FormFields>();
+  const { chain } = useNetwork();
+  const { register, watch, setValue } = useFormContext();
+  const selectedTokenAddress = watch('token');
+  const bigSelectedTokenBalance = selectedTokenAddress ? balances[selectedTokenAddress] : BigInt(0);
 
-  const selectedTokenAmoount = values.token ? balances[values.token] : 0;
+  const tokenInfo = getTokenInfo({ address: selectedTokenAddress, chainId: chain?.id });
+
+  const selectedTokenBalance =
+    formatUnitsToNumber(bigSelectedTokenBalance, tokenInfo?.decimals) || 0;
 
   const onPercentButtonClick = (percent: number) => {
-    setFieldValue(name, percentOf(percent, selectedTokenAmoount));
+    setValue(name, percentOf(selectedTokenBalance, percent), { shouldValidate: true });
   };
 
   return (
@@ -44,6 +49,7 @@ export const FormInputNumber = ({
             {percentIntervals.map((percent) => (
               <Button
                 key={percent}
+                type="button"
                 className="leading-3 text-xs px-1.5 py-0.5"
                 onClick={() => onPercentButtonClick(percent)}
               >
@@ -54,7 +60,20 @@ export const FormInputNumber = ({
         )}
       </div>
       <div className="mt-2">
-        <Input value={value} name={name} onChange={handleChange} type={'number'} placeholder="0" />
+        <Input
+          value={value}
+          name={name}
+          type={'number'}
+          step="any"
+          placeholder="0"
+          register={register}
+          options={{
+            required: 'Required',
+            validate: {
+              positiveNumber: (value) => parseFloat(value) > 0 || 'Must be higher than 0',
+            },
+          }}
+        />
       </div>
     </div>
   );

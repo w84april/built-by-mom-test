@@ -1,14 +1,15 @@
-import { ChangeEventHandler, HTMLInputTypeAttribute } from 'react';
+import { ChangeEventHandler, HTMLInputTypeAttribute, InputHTMLAttributes } from 'react';
 import { Input } from '../common/input';
+import { FieldValues, UseFormRegister, useForm, useFormContext } from 'react-hook-form';
 
 type Props = {
-  value: string | number;
   name: string;
-  handleChange: ChangeEventHandler<HTMLInputElement> | undefined;
   label?: string;
-};
+} & InputHTMLAttributes<HTMLInputElement>;
 
-export const FormInputAddress = ({ value, name, handleChange, label }: Props) => {
+export const FormInputAddress = ({ name, label, ...rest }: Props) => {
+  const { register } = useFormContext();
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -17,7 +18,12 @@ export const FormInputAddress = ({ value, name, handleChange, label }: Props) =>
         )}
       </div>
       <div className="mt-2">
-        <Input value={value} name={name} onChange={handleChange} placeholder="0x0..." />
+        <Input
+          placeholder="0x0..."
+          name={name}
+          register={register}
+          options={{ required: 'Required' }}
+        />
       </div>
     </div>
   );

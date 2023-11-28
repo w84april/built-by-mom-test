@@ -1,23 +1,21 @@
 'use client';
-import { ErrorMessage, Form, Formik } from 'formik';
 import { FormSelectToken } from './form-parts/form-select-token';
-import { useGetSupportedTokens } from '@/hooks/use-get-supported-tokens';
-import { useAccount } from 'wagmi';
+import { getSupportedTokens } from '@/utils/common/get-supported-tokens';
+import { useAccount, useNetwork } from 'wagmi';
 import { useGetMultipleBalances } from '@/hooks/use-get-multiple-balances';
 import { useIsMounted } from '@/hooks/use-is-mounted';
 import { FormInputAddress } from './form-parts/form-input-address';
 import { FormInputNumber } from './form-parts/form-input-number';
-import { Button } from './common/button';
-import { EvmAddress } from '@/types/common';
-import { getFormValidationSchema } from '@/utils/form/get-form-validation-schema';
-import { CustomErrorMessageWrapper } from './common/custom-error-mesage-wrapper';
-
-export type FormFields = { address: string; amount: number; token: EvmAddress | undefined };
+import { FormSendButton } from './form-parts/form-send-button';
+import { FieldValues, FormProvider, useForm } from 'react-hook-form';
+import { ErrorMessage } from './common/error-message';
+import { useEffect } from 'react';
 
 export const SendTokenForm = () => {
   const { address } = useAccount();
+  const { chain } = useNetwork();
 
-  const supportedTokens = useGetSupportedTokens();
+  const supportedTokens = getSupportedTokens(chain?.id);
   const selectOptions = supportedTokens
     ? supportedTokens.map((token) => ({
         value: token.address,
@@ -25,13 +23,19 @@ export const SendTokenForm = () => {
       }))
     : [];
 
-  const initialValues: FormFields = {
-    address: '',
+  const defaultValues = {
+    recipient: '',
     amount: 0,
     token: supportedTokens.at(0)?.address,
   };
 
-  const validationSchema = getFormValidationSchema();
+  const methods = useForm({ defaultValues, mode: 'onChange' });
+
+  const {
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = methods;
 
   const { balances } = useGetMultipleBalances({
     address,
@@ -40,66 +44,43 @@ export const SendTokenForm = () => {
 
   const isMounted = useIsMounted(); // A hack to prevent hydration errors occuring in FormSelectToken
 
+  const onSubmit = (data: FieldValues) => console.log(data);
+
+  // Reset form when network changes
+  useEffect(() => {
+    reset(defaultValues);
+  }, [chain?.id]);
+
   return (
     <div className="flex h-full flex-col grow items-center justify-center p-24">
       <div className="bg-white p-12 rounded-3xl shadow-md max-w-lg w-full">
-        <Formik
-          initialValues={initialValues}
-          enableReinitialize
-          validationSchema={validationSchema}
-          validateOnChange={true}
-          validateOnBlur={true}
-          validateOnMount={true}
-          onSubmit={(values) => {
-            console.log(values);
-          }}
-        >
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
-            <Form className="space-y-6" id={'send-token-form'}>
-              <div>
-                <FormSelectToken
-                  name={'token'}
-                  label={'Token'}
-                  options={isMounted() ? selectOptions : []}
-                  balances={balances}
-                  handleChange={handleChange}
-                />
-                <div className="h-4">
-                  <ErrorMessage name="token">{CustomErrorMessageWrapper}</ErrorMessage>
-                </div>
-              </div>
-
-              <div>
-                <FormInputAddress
-                  name={'address'}
-                  value={values.address}
-                  label={'Recipient Address/ENS Name'}
-                  handleChange={handleChange}
-                />
-                <div className="h-4">
-                  <ErrorMessage name="address">{CustomErrorMessageWrapper}</ErrorMessage>
-                </div>
-              </div>
-
-              <div>
-                <FormInputNumber
-                  label="Amount"
-                  name={'amount'}
-                  value={values.amount}
-                  shouldDisplayPercentButtons
-                  handleChange={handleChange}
-                  balances={balances}
-                />
-                <div className="h-4">
-                  <ErrorMessage name="amount">{CustomErrorMessageWrapper}</ErrorMessage>
-                </div>
-              </div>
-              <Button type="submit" className="w-full">
-                Send
-              </Button>
-            </Form>
-          )}
-        </Formik>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div>
+              <FormSelectToken
+                label={'Token'}
+                name={'token'}
+                options={isMounted() ? selectOptions : []}
+                balances={balances}
+              />
+              <ErrorMessage error={errors.token} />
+            </div>
+            <div>
+              <FormInputAddress label={'Address/ENS Name'} name={'recipient'} />
+              <ErrorMessage error={errors.recipient} />
+            </div>
+            <div>
+              <FormInputNumber
+                label="Amount"
+                name={'amount'}
+                shouldDisplayPercentButtons
+                balances={balances}
+              />
+              <ErrorMessage error={errors.amount} />
+            </div>
+            <FormSendButton balances={balances} />
+          </form>
+        </FormProvider>
       </div>
     </div>
   );
