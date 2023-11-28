@@ -4,9 +4,9 @@ import { Button } from '../common/button';
 import { percentOf } from '@/utils/common/percent-of';
 import { Balances } from '@/hooks/use-get-multiple-balances';
 import { useFormContext } from 'react-hook-form';
-import { getTokenInfo } from '@/utils/common/get-token-info';
 import { formatUnitsToNumber } from '@/utils/format/format-units-to-number';
 import { useNetwork } from 'wagmi';
+import { getTokenInfo } from '@/utils/token/get-token-info';
 
 const percentIntervals = [25, 50, 75, 100];
 

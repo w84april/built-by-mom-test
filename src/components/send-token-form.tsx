@@ -1,6 +1,6 @@
 'use client';
 import { FormSelectToken } from './form-parts/form-select-token';
-import { getSupportedTokens } from '@/utils/common/get-supported-tokens';
+import { getSupportedTokens } from '@/utils/token/get-supported-tokens';
 import { useAccount, useNetwork } from 'wagmi';
 import { useGetMultipleBalances } from '@/hooks/use-get-multiple-balances';
 import { useIsMounted } from '@/hooks/use-is-mounted';

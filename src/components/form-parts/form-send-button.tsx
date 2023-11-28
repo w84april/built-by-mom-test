@@ -4,8 +4,8 @@ import { getIsValidEvmAddress } from '@/utils/common/get-is-valid-evm-address';
 import { useFormContext } from 'react-hook-form';
 import { Balances } from '@/hooks/use-get-multiple-balances';
 import { convertNumberToBigInt } from '@/utils/format/convert-number-to-bigint';
-import { getTokenInfo } from '@/utils/common/get-token-info';
-import { getIsSufficientBalance } from '@/utils/common/get-is-sufficient-balance';
+import { getIsSufficientBalance } from '@/utils/token/get-is-sufficient-balance';
+import { getTokenInfo } from '@/utils/token/get-token-info';
 
 type Props = {
   balances: Balances;

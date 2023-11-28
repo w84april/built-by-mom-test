@@ -1,10 +1,9 @@
 import { Balances } from '@/hooks/use-get-multiple-balances';
 import { EvmAddress } from '@/types/common';
 import { getIsValidEvmAddress } from '@/utils/common/get-is-valid-evm-address';
-import { getTokenInfo } from '@/utils/common/get-token-info';
 import { formatUnitsToNumber } from '@/utils/format/format-units-to-number';
-import { ChangeEventHandler, InputHTMLAttributes, SelectHTMLAttributes } from 'react';
-import { FieldValues, UseFormRegister, useForm, useFormContext } from 'react-hook-form';
+import { getTokenInfo } from '@/utils/token/get-token-info';
+import { useFormContext } from 'react-hook-form';
 import { useNetwork } from 'wagmi';
 
 type Props = {
