@@ -1,18 +1,31 @@
 import { convertNumberToBigInt } from '@/utils/format/convert-number-to-bigint';
 import { getTokenInfo } from '@/utils/token/get-token-info';
-import { erc20ABI, useNetwork, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import {
+  erc20ABI,
+  useNetwork,
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from 'wagmi';
 import { useDebounce } from './use-debounce';
 import { EvmAddress } from '@/types/common';
 import { useGetAddressByEnsName } from './use-get-address-by-ens-name';
+import { UseFormReset } from 'react-hook-form';
 
 export const useSend = ({
   recipient,
   token,
   amount,
+  reset,
 }: {
   recipient: string;
   token: EvmAddress | undefined;
   amount: number;
+  reset: UseFormReset<{
+    recipient: string;
+    amount: number;
+    token: `0x${string}` | undefined;
+  }>;
 }) => {
   const { chain } = useNetwork();
 
@@ -30,7 +43,7 @@ export const useSend = ({
       ? convertNumberToBigInt(debouncedAmount, tokenInfo?.decimals)
       : BigInt(0);
 
-  const { config } = usePrepareContractWrite({
+  const { config, isLoading: isContractPreparing } = usePrepareContractWrite({
     address: token,
     abi: erc20ABI,
     functionName: 'transfer',
@@ -38,6 +51,16 @@ export const useSend = ({
     enabled: !invalidRecipient,
   });
 
-  const { data, isLoading, isSuccess, error, write } = useContractWrite(config);
-  return { isLoading, isSuccess, error, write };
+  const { data, isLoading: isLoading, write } = useContractWrite(config); // isLoading is true when user is promted to submit the transaction in the wallet
+
+  const {
+    isLoading: isPending, // True after submiting transaction in the wallet
+    isSuccess,
+    error,
+  } = useWaitForTransaction({
+    hash: data?.hash,
+    onSuccess: () => reset(),
+  });
+
+  return { isLoading: isLoading || isPending || isContractPreparing, isSuccess, error, write };
 };

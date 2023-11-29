@@ -1,13 +1,13 @@
 'use client';
 import { FormSelectToken } from './form-parts/form-select-token';
 import { getSupportedTokens } from '@/utils/token/get-supported-tokens';
-import { useAccount, useNetwork, usePrepareSendTransaction } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import { useGetMultipleBalances } from '@/hooks/use-get-multiple-balances';
 import { useIsMounted } from '@/hooks/use-is-mounted';
 import { FormInputAddress } from './form-parts/form-input-address';
 import { FormInputNumber } from './form-parts/form-input-number';
 import { FormSendButton } from './form-parts/form-send-button';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FieldValues, FormProvider, useForm } from 'react-hook-form';
 import { ErrorMessage } from './common/error-message';
 import { useEffect, useMemo } from 'react';
 import { useSend } from '@/hooks/use-send';
@@ -51,7 +51,7 @@ export const SendTokenForm = () => {
     tokens: supportedTokens,
   });
 
-  const { write, isLoading } = useSend({ recipient, token, amount });
+  const { write, isLoading } = useSend({ recipient, token, amount, reset });
 
   const isMounted = useIsMounted(); // A hack to prevent hydration errors occuring in FormSelectToken
 
