@@ -2,6 +2,12 @@ import { EvmAddress } from '@/types/common';
 import { getSupportedTokens } from './get-supported-tokens';
 import { isAddressEqual } from 'viem';
 
+/**
+ * Returns token info by its address
+ * @param address token address
+ * @param chainId
+ * @returns
+ */
 export const getTokenInfo = ({
   address,
   chainId,

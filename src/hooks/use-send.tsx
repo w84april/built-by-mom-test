@@ -62,7 +62,7 @@ export const useSend = ({
     enabled: !invalidRecipient,
   });
 
-  const { data, isLoading: isLoading, writeAsync, write } = useContractWrite(config); // isLoading is true when user is promted to submit the transaction in the wallet
+  const { data, isLoading: isLoading, writeAsync } = useContractWrite(config); // isLoading is true when user is promted to submit the transaction in the wallet
 
   const onSuccess = (data: TransactionReceipt) => {
     if (data.status !== 'success') return;
@@ -83,6 +83,7 @@ export const useSend = ({
     });
     reset();
   };
+
   const {
     isLoading: isPending, // True after submiting transaction in the wallet
     isSuccess,

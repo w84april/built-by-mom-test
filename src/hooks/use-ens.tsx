@@ -1,16 +1,5 @@
 import { EvmAddress } from '@/types/common';
-import { getIpfsCidFromGatewayUrl } from '@/utils/ipfs/get-ipfs-cid';
 import { useEnsAvatar, useEnsName, useNetwork } from 'wagmi';
-
-export const getEnsAvatarUrl = (ensAvatar: ReturnType<typeof useEnsAvatar>) => {
-  if (!ensAvatar?.data) return undefined;
-
-  const ipfsCid = getIpfsCidFromGatewayUrl(ensAvatar?.data);
-
-  return ipfsCid
-    ? `chocolate-gleaming-armadillo-579.mypinata.cloud/ipfs/${ipfsCid}`
-    : ensAvatar.data;
-};
 
 type HookArgs = {
   address: EvmAddress;
@@ -20,6 +9,11 @@ type HookOptions = {
   skip?: boolean;
 };
 
+/**
+ * Returns ENS Avatar & ENS Name by address. Object fields are null if corresponding data doesn't exist
+ * @param address connected account address
+ * @param skip can be retreived from options param, if true useEnsName and useEnsAvatar are not triggered
+ */
 export const useEns = ({ address }: HookArgs, options?: HookOptions) => {
   const { skip = false } = options ?? {};
 
@@ -37,10 +31,10 @@ export const useEns = ({ address }: HookArgs, options?: HookOptions) => {
     enabled: !!ensName,
   });
 
-  const ensAvatarUrl = getEnsAvatarUrl(ensAvatar);
+  const ensAvatarUrl = ensAvatar.data || null;
 
   return {
-    ensAvatar,
+    ensName,
     ensAvatarUrl,
   };
 };

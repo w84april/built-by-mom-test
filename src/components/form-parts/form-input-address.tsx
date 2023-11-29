@@ -1,6 +1,6 @@
-import { ChangeEventHandler, HTMLInputTypeAttribute, InputHTMLAttributes } from 'react';
+import { InputHTMLAttributes } from 'react';
 import { Input } from '../common/input';
-import { FieldValues, UseFormRegister, useForm, useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 
 type Props = {
   name: string;
