@@ -1,6 +1,7 @@
 'use client';
 import { AccountImage } from '@/components/common/account-image';
 import ErrorBoundary from '@/components/common/error-boundary';
+import { ToastProvider } from '@/components/common/toast-provider';
 import { MyApp } from '@/components/my-app';
 import { chains, wagmiConfig } from '@/utils/wagmi/wagmi-client';
 import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
@@ -15,16 +16,18 @@ export default function Home() {
   const customTheme = { ...rainbowKitDefaultTheme, fonts: { body: inter.style.fontFamily } };
   return (
     <ErrorBoundary>
-      <WagmiConfig config={wagmiConfig}>
-        <RainbowKitProvider
-          chains={chains}
-          showRecentTransactions={true}
-          avatar={AccountImage}
-          theme={customTheme}
-        >
-          <MyApp />
-        </RainbowKitProvider>
-      </WagmiConfig>
+      <ToastProvider>
+        <WagmiConfig config={wagmiConfig}>
+          <RainbowKitProvider
+            chains={chains}
+            showRecentTransactions={true}
+            avatar={AccountImage}
+            theme={customTheme}
+          >
+            <MyApp />
+          </RainbowKitProvider>
+        </WagmiConfig>
+      </ToastProvider>
     </ErrorBoundary>
   );
 }

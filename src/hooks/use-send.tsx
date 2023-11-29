@@ -11,6 +11,10 @@ import { useDebounce } from './use-debounce';
 import { EvmAddress } from '@/types/common';
 import { useGetAddressByEnsName } from './use-get-address-by-ens-name';
 import { UseFormReset } from 'react-hook-form';
+import { useToastContext } from '@/components/common/toast-provider';
+import { TransactionReceipt } from 'viem';
+import { shortenAddress } from '@/utils/common/shorten-address';
+import { useWrappedWriteFunction } from './use-wrapped-write-function';
 
 export const useSend = ({
   recipient,
@@ -28,6 +32,8 @@ export const useSend = ({
   }>;
 }) => {
   const { chain } = useNetwork();
+
+  const { addToast } = useToastContext();
 
   const { debouncedValue: debouncedAmount, isLoading: isLoadingAmount } = useDebounce(amount, 500);
   const { debouncedValue: debouncedRecipient, isLoading: isLoadingRecipient } = useDebounce(
@@ -51,7 +57,25 @@ export const useSend = ({
     enabled: !invalidRecipient,
   });
 
-  const { data, isLoading: isLoading, write } = useContractWrite(config); // isLoading is true when user is promted to submit the transaction in the wallet
+  const { data, isLoading: isLoading, writeAsync } = useContractWrite(config); // isLoading is true when user is promted to submit the transaction in the wallet
+
+  const onSuccess = (data: TransactionReceipt) => {
+    const recipientAddress = `0x${data.logs.at(0)?.topics.at(2)?.slice(26)}`;
+    const recipient = recipientAddress ? shortenAddress(recipientAddress, true) : 'recipient';
+
+    addToast({
+      message: `Succesfully sent token to ${recipient}`,
+    });
+    reset();
+  };
+
+  const onError = (error: Error) => {
+    addToast({
+      message: error.message,
+      status: 'error',
+    });
+    reset();
+  };
 
   const {
     isLoading: isPending, // True after submiting transaction in the wallet
@@ -59,14 +83,16 @@ export const useSend = ({
     error,
   } = useWaitForTransaction({
     hash: data?.hash,
-    onSuccess: () => reset(),
+    onSuccess,
   });
+
+  const onSend = useWrappedWriteFunction(writeAsync, onError);
 
   return {
     isLoading:
       isLoading || isPending || isContractPreparing || isLoadingAmount || isLoadingRecipient,
     isSuccess,
     error,
-    write,
+    onSend,
   };
 };

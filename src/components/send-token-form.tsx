@@ -7,7 +7,7 @@ import { useIsMounted } from '@/hooks/use-is-mounted';
 import { FormInputAddress } from './form-parts/form-input-address';
 import { FormInputNumber } from './form-parts/form-input-number';
 import { FormSendButton } from './form-parts/form-send-button';
-import { FieldValues, FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { ErrorMessage } from './common/error-message';
 import { useEffect, useMemo } from 'react';
 import { useSend } from '@/hooks/use-send';
@@ -51,11 +51,11 @@ export const SendTokenForm = () => {
     tokens: supportedTokens,
   });
 
-  const { write, isLoading } = useSend({ recipient, token, amount, reset });
+  const { onSend, isLoading } = useSend({ recipient, token, amount, reset });
 
   const isMounted = useIsMounted(); // A hack to prevent hydration errors occuring in FormSelectToken
 
-  const onSubmit = () => write?.();
+  const onSubmit = () => onSend?.();
 
   // Reset form when network or account changes
   useEffect(() => {
