@@ -30,7 +30,7 @@ export const SendTokenForm = () => {
       amount: 0,
       token: supportedTokens.at(0)?.address,
     }),
-    [supportedTokens],
+    [JSON.stringify(supportedTokens)],
   );
 
   const methods = useForm({ defaultValues, mode: 'onChange' });
@@ -46,12 +46,12 @@ export const SendTokenForm = () => {
   const amount = watch('amount');
   const token = watch('token');
 
-  const { balances } = useGetMultipleBalances({
+  const { balances, refetchBalances } = useGetMultipleBalances({
     address,
     tokens: supportedTokens,
   });
 
-  const { onSend, isLoading } = useSend({ recipient, token, amount, reset });
+  const { onSend, isLoading } = useSend({ recipient, token, amount, reset, refetchBalances });
 
   const isMounted = useIsMounted(); // A hack to prevent hydration errors occuring in FormSelectToken
 
@@ -60,7 +60,7 @@ export const SendTokenForm = () => {
   // Reset form when network or account changes
   useEffect(() => {
     reset(defaultValues);
-  }, [chain?.id, address, reset, defaultValues]);
+  }, [chain?.id, address, defaultValues, reset]);
 
   return (
     <div className="flex h-full flex-col grow items-center justify-center p-2 sm:p-24">

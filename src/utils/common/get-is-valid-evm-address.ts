@@ -7,6 +7,6 @@ export const getIsValidEvmAddress = (testedString: unknown): testedString is Evm
   return isAddress(testedString);
 };
 
-export function assertIsValidEthereumAddress(value: unknown): asserts value is EvmAddress {
+export function assertIsValidEvmAddress(value: unknown): asserts value is EvmAddress {
   invariant(getIsValidEvmAddress(value), `Expected EVM address, got ${value}`);
 }

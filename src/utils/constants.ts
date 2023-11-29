@@ -1,11 +1,12 @@
 import { EvmAddress } from '@/types/common';
 import { sepolia, mainnet } from 'wagmi';
-import { goerli } from 'wagmi/chains';
+import { goerli, localhost } from 'wagmi/chains';
 
 export const EVM_NETWORKS = {
   ethereum: mainnet.id,
   sepolia: sepolia.id,
   goerli: goerli.id,
+  localhost: localhost.id,
 } as const;
 
 export type EVM_NETWORKS = (typeof EVM_NETWORKS)[keyof typeof EVM_NETWORKS];
@@ -35,14 +36,21 @@ export const daiToken = {
     address: '0x9D233A907E065855D2A9c7d4B552ea27fB2E5a36',
     decimals: 18,
   },
+  [EVM_NETWORKS.localhost]: {
+    symbol: 'DAI',
+    address: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+    decimals: 18,
+  },
 } satisfies Record<EVM_NETWORKS, ChainToken | undefined>;
 
 export const ethereumTokens = [daiToken[EVM_NETWORKS.ethereum]] satisfies ChainTokens;
 export const sepoliaTokens = [daiToken[EVM_NETWORKS.sepolia]] satisfies ChainTokens;
 export const goerliTokens = [daiToken[EVM_NETWORKS.goerli]] satisfies ChainTokens;
+export const localTokens = [daiToken[EVM_NETWORKS.localhost]] satisfies ChainTokens;
 
 export const supportedEVMNetworkTokensList: Record<EVM_NETWORKS, ChainTokens> = {
   [EVM_NETWORKS.ethereum]: ethereumTokens,
   [EVM_NETWORKS.sepolia]: sepoliaTokens,
   [EVM_NETWORKS.goerli]: goerliTokens,
+  [EVM_NETWORKS.localhost]: localTokens,
 };

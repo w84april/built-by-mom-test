@@ -2,12 +2,12 @@ import '@rainbow-me/rainbowkit/styles.css';
 
 import { getDefaultWallets } from '@rainbow-me/rainbowkit';
 import { configureChains, createConfig, sepolia } from 'wagmi';
-import { goerli, mainnet } from 'wagmi/chains';
+import { goerli, localhost, mainnet } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { infuraProvider } from 'wagmi/providers/infura';
 
 const { chains: wagmiChains, publicClient } = configureChains(
-  [mainnet, sepolia, goerli],
+  [mainnet, sepolia, goerli, localhost],
   [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_API_KEY || '' }), publicProvider()],
 );
 

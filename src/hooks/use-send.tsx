@@ -15,11 +15,13 @@ import { useToastContext } from '@/components/common/toast-provider';
 import { TransactionReceipt } from 'viem';
 import { shortenAddress } from '@/utils/common/shorten-address';
 import { useWrappedWriteFunction } from './use-wrapped-write-function';
+import { assertIsValidChainId } from '@/utils/common/get-valid-chain.id';
 
 export const useSend = ({
   recipient,
   token,
   amount,
+  refetchBalances,
   reset,
 }: {
   recipient: string;
@@ -30,8 +32,10 @@ export const useSend = ({
     amount: number;
     token: `0x${string}` | undefined;
   }>;
+  refetchBalances: () => void;
 }) => {
   const { chain } = useNetwork();
+  assertIsValidChainId(chain?.id);
 
   const { addToast } = useToastContext();
 
@@ -52,14 +56,16 @@ export const useSend = ({
   const { config, isLoading: isContractPreparing } = usePrepareContractWrite({
     address: token,
     abi: erc20ABI,
+    chainId: chain.id,
     functionName: 'transfer',
     args: invalidRecipient ? undefined : [recipientAddress as EvmAddress, tokenValue], // Type casting is safe here because we check address validity beforehand
     enabled: !invalidRecipient,
   });
 
-  const { data, isLoading: isLoading, writeAsync } = useContractWrite(config); // isLoading is true when user is promted to submit the transaction in the wallet
+  const { data, isLoading: isLoading, writeAsync, write } = useContractWrite(config); // isLoading is true when user is promted to submit the transaction in the wallet
 
   const onSuccess = (data: TransactionReceipt) => {
+    if (data.status !== 'success') return;
     const recipientAddress = `0x${data.logs.at(0)?.topics.at(2)?.slice(26)}`;
     const recipient = recipientAddress ? shortenAddress(recipientAddress, true) : 'recipient';
 
@@ -67,6 +73,7 @@ export const useSend = ({
       message: `Succesfully sent token to ${recipient}`,
     });
     reset();
+    refetchBalances();
   };
 
   const onError = (error: Error) => {
@@ -76,14 +83,15 @@ export const useSend = ({
     });
     reset();
   };
-
   const {
     isLoading: isPending, // True after submiting transaction in the wallet
     isSuccess,
     error,
   } = useWaitForTransaction({
     hash: data?.hash,
+    chainId: chain.id,
     onSuccess,
+    enabled: !invalidRecipient,
   });
 
   const onSend = useWrappedWriteFunction(writeAsync, onError);

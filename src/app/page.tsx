@@ -13,16 +13,12 @@ const inter = Inter({ subsets: ['latin'] });
 export default function Home() {
   const rainbowKitDefaultTheme = lightTheme();
   const customTheme = { ...rainbowKitDefaultTheme, fonts: { body: inter.style.fontFamily } };
+
   return (
     <ErrorBoundary>
       <ToastProvider>
         <WagmiConfig config={wagmiConfig}>
-          <RainbowKitProvider
-            chains={chains}
-            showRecentTransactions={true}
-            avatar={AccountImage}
-            theme={customTheme}
-          >
+          <RainbowKitProvider chains={chains} avatar={AccountImage} theme={customTheme}>
             <MyApp />
           </RainbowKitProvider>
         </WagmiConfig>

@@ -12,7 +12,12 @@ export const useGetMultipleBalances = ({
 }: {
   address: EvmAddress | undefined;
   tokens: ChainTokens;
-}): { balances: Balances; isLoading: boolean; error: Error | null } => {
+}): {
+  balances: Balances;
+  isLoading: boolean;
+  refetchBalances: () => void;
+  error: Error | null;
+} => {
   const callBalanceOfConfig = {
     abi: erc20ABI,
     functionName: 'balanceOf',
@@ -23,7 +28,12 @@ export const useGetMultipleBalances = ({
     ...callBalanceOfConfig,
   }));
 
-  const { data, error, isLoading } = useContractReads({
+  const {
+    data,
+    error,
+    refetch: refetchBalances,
+    isLoading,
+  } = useContractReads({
     contracts: contracts,
     enabled: !!address && tokens.length > 0,
   });
@@ -38,5 +48,5 @@ export const useGetMultipleBalances = ({
       };
     }, {}) || {};
 
-  return { balances, error, isLoading };
+  return { balances, error, isLoading, refetchBalances };
 };
