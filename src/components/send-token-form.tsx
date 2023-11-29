@@ -51,7 +51,7 @@ export const SendTokenForm = () => {
     tokens: supportedTokens,
   });
 
-  const { write } = useSend({ recipient, token, amount });
+  const { write, isLoading } = useSend({ recipient, token, amount });
 
   const isMounted = useIsMounted(); // A hack to prevent hydration errors occuring in FormSelectToken
 
@@ -61,6 +61,7 @@ export const SendTokenForm = () => {
   useEffect(() => {
     reset(defaultValues);
   }, [chain?.id, address, reset, defaultValues]);
+
   return (
     <div className="flex h-full flex-col grow items-center justify-center p-2 sm:p-24">
       <div className="bg-white p-12 rounded-3xl shadow-md sm:max-w-lg w-full max-w-full">
@@ -88,7 +89,7 @@ export const SendTokenForm = () => {
               />
               <ErrorMessage error={errors.amount} />
             </div>
-            <FormSendButton balances={balances} />
+            <FormSendButton balances={balances} isLoading={isLoading} />
           </form>
         </FormProvider>
       </div>

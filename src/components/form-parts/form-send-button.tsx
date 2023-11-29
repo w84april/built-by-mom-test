@@ -9,9 +9,10 @@ import { useGetAddressByEnsName } from '@/hooks/use-get-address-by-ens-name';
 
 type Props = {
   balances: Balances;
+  isLoading: boolean;
 };
 
-export const FormSendButton = ({ balances }: Props) => {
+export const FormSendButton = ({ balances, isLoading }: Props) => {
   const { chain } = useNetwork();
   const { watch } = useFormContext();
 
@@ -42,7 +43,7 @@ export const FormSendButton = ({ balances }: Props) => {
   const isDisabled = invalidRecipient || !isSufficientTokenBalance;
 
   return (
-    <Button type="submit" className="w-full" disabled={isDisabled}>
+    <Button type="submit" className="w-full h-9" disabled={isDisabled} isLoading={isLoading}>
       {isDisabled ? disabledReason : 'Send'}
     </Button>
   );
