@@ -8,7 +8,6 @@ import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit';
 import { Inter } from 'next/font/google';
 import { WagmiConfig } from 'wagmi';
 
-// Would be nice to import it
 const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
