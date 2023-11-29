@@ -1,6 +1,6 @@
 import { EvmAddress } from '@/types/common';
 import { getSupportedTokens } from './get-supported-tokens';
-import { compareAddresses } from '@/utils/common/compare-addresses';
+import { isAddressEqual } from 'viem';
 
 export const getTokenInfo = ({
   address,
@@ -11,5 +11,5 @@ export const getTokenInfo = ({
 }) => {
   const supportedTokens = getSupportedTokens(chainId);
   if (!address || supportedTokens.length === 0) return null;
-  return supportedTokens.find((token) => compareAddresses(address, token.address));
+  return supportedTokens.find((token) => isAddressEqual(address, token.address));
 };

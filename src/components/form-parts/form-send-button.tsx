@@ -2,10 +2,10 @@ import { Button } from '../common/button';
 import { useNetwork } from 'wagmi';
 import { useFormContext } from 'react-hook-form';
 import { Balances } from '@/hooks/use-get-multiple-balances';
-import { convertNumberToBigInt } from '@/utils/format/convert-number-to-bigint';
 import { getIsSufficientBalance } from '@/utils/token/get-is-sufficient-balance';
 import { getTokenInfo } from '@/utils/token/get-token-info';
 import { useGetAddressByEnsName } from '@/hooks/use-get-address-by-ens-name';
+import { convertNumberToUnits } from '@/utils/convert/convert-number-to-units';
 
 type Props = {
   balances: Balances;
@@ -32,10 +32,7 @@ export const FormSendButton = ({ balances, isLoading }: Props) => {
 
   const amountToBeSent = watch('amount');
 
-  const bigAmountToBeSent =
-    amountToBeSent && tokenInfo?.decimals
-      ? convertNumberToBigInt(amountToBeSent, tokenInfo?.decimals)
-      : BigInt(0);
+  const bigAmountToBeSent = convertNumberToUnits(amountToBeSent, tokenInfo?.decimals);
 
   const isSufficientTokenBalance = getIsSufficientBalance(selectedTokenBalance, bigAmountToBeSent);
   if (!isSufficientTokenBalance) disabledReason = `Insufficient token balance`;
@@ -43,7 +40,7 @@ export const FormSendButton = ({ balances, isLoading }: Props) => {
   const isDisabled = invalidRecipient || !isSufficientTokenBalance;
 
   return (
-    <Button type="submit" className="w-full h-9" disabled={isDisabled} isLoading={isLoading}>
+    <Button type="submit" className="w-full h-9" isDisabled={isDisabled} isLoading={isLoading}>
       {isDisabled ? disabledReason : 'Send'}
     </Button>
   );

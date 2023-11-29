@@ -1,7 +1,7 @@
 import { Balances } from '@/hooks/use-get-multiple-balances';
 import { EvmAddress } from '@/types/common';
 import { getIsValidEvmAddress } from '@/utils/common/get-is-valid-evm-address';
-import { formatUnitsToNumber } from '@/utils/format/format-units-to-number';
+import { convertUnitsToNumber } from '@/utils/convert/convert-units-to-number';
 import { getTokenInfo } from '@/utils/token/get-token-info';
 import { useFormContext } from 'react-hook-form';
 import { useNetwork } from 'wagmi';
@@ -38,7 +38,7 @@ export const FormSelectToken = ({ label, name, balances, options }: Props) => {
             const bigSelectedTokenBalance =
               balances && getIsValidEvmAddress(value) ? balances[value] : BigInt(0);
             const selectedTokenBalance =
-              formatUnitsToNumber(bigSelectedTokenBalance, tokenInfo?.decimals) || 0;
+              convertUnitsToNumber(bigSelectedTokenBalance, tokenInfo?.decimals) || 0;
 
             return (
               <option key={value} value={value}>

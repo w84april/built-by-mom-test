@@ -1,4 +1,4 @@
-import { convertNumberToBigInt } from '@/utils/format/convert-number-to-bigint';
+import { convertNumberToUnits } from '@/utils/convert/convert-number-to-units';
 import { getTokenInfo } from '@/utils/token/get-token-info';
 import {
   erc20ABI,
@@ -38,10 +38,7 @@ export const useSend = ({
     addressOrEnsName: debouncedRecipient,
   });
 
-  const tokenValue =
-    debouncedAmount && tokenInfo?.decimals
-      ? convertNumberToBigInt(debouncedAmount, tokenInfo?.decimals)
-      : BigInt(0);
+  const tokenValue = convertNumberToUnits(debouncedAmount, tokenInfo?.decimals);
 
   const { config, isLoading: isContractPreparing } = usePrepareContractWrite({
     address: token,

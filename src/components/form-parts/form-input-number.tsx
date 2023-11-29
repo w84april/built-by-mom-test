@@ -4,9 +4,9 @@ import { Button } from '../common/button';
 import { percentOf } from '@/utils/common/percent-of';
 import { Balances } from '@/hooks/use-get-multiple-balances';
 import { useFormContext } from 'react-hook-form';
-import { formatUnitsToNumber } from '@/utils/format/format-units-to-number';
 import { useNetwork } from 'wagmi';
 import { getTokenInfo } from '@/utils/token/get-token-info';
+import { convertUnitsToNumber } from '@/utils/convert/convert-units-to-number';
 
 const percentIntervals = [25, 50, 75, 100];
 
@@ -32,7 +32,7 @@ export const FormInputNumber = ({
   const tokenInfo = getTokenInfo({ address: selectedTokenAddress, chainId: chain?.id });
 
   const selectedTokenBalance =
-    formatUnitsToNumber(bigSelectedTokenBalance, tokenInfo?.decimals) || 0;
+    convertUnitsToNumber(bigSelectedTokenBalance, tokenInfo?.decimals) || 0;
 
   const onPercentButtonClick = (percent: number) => {
     setValue(name, percentOf(selectedTokenBalance, percent), { shouldValidate: true });

@@ -6,7 +6,7 @@ import { formatUnits } from 'viem';
  * If either param is undefined it returns null, so it should always be used with a fallback.
  *
  */
-export const formatUnitsToNumber = (
+export const convertUnitsToNumber = (
   price: bigint | number | undefined,
   decimal: bigint | number | undefined,
 ) => {
