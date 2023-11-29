@@ -18,7 +18,12 @@ export default function Home() {
     <ErrorBoundary>
       <ToastProvider>
         <WagmiConfig config={wagmiConfig}>
-          <RainbowKitProvider chains={chains} avatar={AccountImage} theme={customTheme}>
+          <RainbowKitProvider
+            locale="en-US"
+            chains={chains}
+            avatar={AccountImage}
+            theme={customTheme}
+          >
             <MyApp />
           </RainbowKitProvider>
         </WagmiConfig>
