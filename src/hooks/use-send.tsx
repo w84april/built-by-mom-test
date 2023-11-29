@@ -29,8 +29,11 @@ export const useSend = ({
 }) => {
   const { chain } = useNetwork();
 
-  const debouncedAmount = useDebounce(amount, 500);
-  const debouncedRecipient = useDebounce(recipient, 500);
+  const { debouncedValue: debouncedAmount, isLoading: isLoadingAmount } = useDebounce(amount, 500);
+  const { debouncedValue: debouncedRecipient, isLoading: isLoadingRecipient } = useDebounce(
+    recipient,
+    500,
+  );
 
   const tokenInfo = getTokenInfo({ address: token, chainId: chain?.id });
 
@@ -59,5 +62,11 @@ export const useSend = ({
     onSuccess: () => reset(),
   });
 
-  return { isLoading: isLoading || isPending || isContractPreparing, isSuccess, error, write };
+  return {
+    isLoading:
+      isLoading || isPending || isContractPreparing || isLoadingAmount || isLoadingRecipient,
+    isSuccess,
+    error,
+    write,
+  };
 };
