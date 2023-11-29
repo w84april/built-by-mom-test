@@ -15,7 +15,6 @@ import { useToastContext } from '@/components/common/toast-provider';
 import { TransactionReceipt } from 'viem';
 import { shortenAddress } from '@/utils/common/shorten-address';
 import { useWrappedWriteFunction } from './use-wrapped-write-function';
-import { assertIsValidChainId } from '@/utils/common/get-valid-chain.id';
 
 export const useSend = ({
   recipient,
@@ -35,7 +34,6 @@ export const useSend = ({
   refetchBalances: () => void;
 }) => {
   const { chain } = useNetwork();
-  assertIsValidChainId(chain?.id);
 
   const { addToast } = useToastContext();
 
@@ -56,7 +54,6 @@ export const useSend = ({
   const { config, isLoading: isContractPreparing } = usePrepareContractWrite({
     address: token,
     abi: erc20ABI,
-    chainId: chain.id,
     functionName: 'transfer',
     args: invalidRecipient ? undefined : [recipientAddress as EvmAddress, tokenValue], // Type casting is safe here because we check address validity beforehand
     enabled: !invalidRecipient,
@@ -90,7 +87,6 @@ export const useSend = ({
     error,
   } = useWaitForTransaction({
     hash: data?.hash,
-    chainId: chain.id,
     onSuccess,
     enabled: !invalidRecipient,
   });
