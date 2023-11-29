@@ -1,5 +1,4 @@
 import { EvmAddress } from '@/types/common';
-import { Chain, useNetwork } from 'wagmi';
 import { getSupportedTokens } from './get-supported-tokens';
 import { compareAddresses } from '@/utils/common/compare-addresses';
 

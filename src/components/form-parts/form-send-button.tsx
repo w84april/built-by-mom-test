@@ -1,11 +1,11 @@
 import { Button } from '../common/button';
-import { useEnsAddress, useNetwork } from 'wagmi';
-import { getIsValidEvmAddress } from '@/utils/common/get-is-valid-evm-address';
+import { useNetwork } from 'wagmi';
 import { useFormContext } from 'react-hook-form';
 import { Balances } from '@/hooks/use-get-multiple-balances';
 import { convertNumberToBigInt } from '@/utils/format/convert-number-to-bigint';
 import { getIsSufficientBalance } from '@/utils/token/get-is-sufficient-balance';
 import { getTokenInfo } from '@/utils/token/get-token-info';
+import { useGetAddressByEnsName } from '@/hooks/use-get-address-by-ens-name';
 
 type Props = {
   balances: Balances;
@@ -20,19 +20,7 @@ export const FormSendButton = ({ balances }: Props) => {
   /* ---- Start of address/ens name validation */
   const addressOrEnsName = watch('recipient');
 
-  //Get the address of an ENS name
-  const {
-    data: addressByEnsName,
-    error: addressByEnsNameError,
-    isLoading: addressByEnsNameLoading,
-  } = useEnsAddress({
-    name: addressOrEnsName,
-    enabled: false, // Hook doesn't work properly if we don't provide it with enable: false param. Might open github issue
-  });
-
-  const recipient = addressByEnsName || addressOrEnsName;
-
-  const invalidRecipient = !getIsValidEvmAddress(recipient);
+  const { invalidRecipient } = useGetAddressByEnsName({ addressOrEnsName });
   if (invalidRecipient) disabledReason = 'Invalid address/ENS name';
 
   /* ---- Start of token balance insufficiency validation */

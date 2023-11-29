@@ -1,6 +1,5 @@
 import { EvmAddress } from '@/types/common';
 import { ChainTokens } from '@/utils/constants';
-import { formatUnitsToNumber } from '@/utils/format/format-units-to-number';
 import { erc20ABI, useContractReads } from 'wagmi';
 
 export type Balances = Record<EvmAddress, bigint>;

@@ -1,15 +1,16 @@
 'use client';
 import { FormSelectToken } from './form-parts/form-select-token';
 import { getSupportedTokens } from '@/utils/token/get-supported-tokens';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useNetwork, usePrepareSendTransaction } from 'wagmi';
 import { useGetMultipleBalances } from '@/hooks/use-get-multiple-balances';
 import { useIsMounted } from '@/hooks/use-is-mounted';
 import { FormInputAddress } from './form-parts/form-input-address';
 import { FormInputNumber } from './form-parts/form-input-number';
 import { FormSendButton } from './form-parts/form-send-button';
-import { FieldValues, FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { ErrorMessage } from './common/error-message';
 import { useEffect, useMemo } from 'react';
+import { useSend } from '@/hooks/use-send';
 
 export const SendTokenForm = () => {
   const { address } = useAccount();
@@ -38,23 +39,28 @@ export const SendTokenForm = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = methods;
+
+  const recipient = watch('recipient');
+  const amount = watch('amount');
+  const token = watch('token');
 
   const { balances } = useGetMultipleBalances({
     address,
     tokens: supportedTokens,
   });
 
+  const { write } = useSend({ recipient, token, amount });
+
   const isMounted = useIsMounted(); // A hack to prevent hydration errors occuring in FormSelectToken
 
-  const onSubmit = (data: FieldValues) => console.log(data);
+  const onSubmit = () => write?.();
 
   // Reset form when network or account changes
   useEffect(() => {
-    console.log('here');
     reset(defaultValues);
   }, [chain?.id, address, reset, defaultValues]);
-
   return (
     <div className="flex h-full flex-col grow items-center justify-center p-2 sm:p-24">
       <div className="bg-white p-12 rounded-3xl shadow-md sm:max-w-lg w-full max-w-full">
